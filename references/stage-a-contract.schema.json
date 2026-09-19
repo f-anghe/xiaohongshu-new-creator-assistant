@@ -1,0 +1,651 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stage-a-contract.schema.json",
+  "title": "阶段A内部模块调用契约",
+  "oneOf": [
+    {"$ref": "#/$defs/deepDiveRequest"},
+    {"$ref": "#/$defs/deepDiveResponse"},
+    {"$ref": "#/$defs/creationMapRequest"},
+    {"$ref": "#/$defs/creationMapResponse"},
+    {"$ref": "#/$defs/optimizationDemoRequest"},
+    {"$ref": "#/$defs/optimizationDemoResponse"},
+    {"$ref": "#/$defs/creationRequest"},
+    {"$ref": "#/$defs/creationResponse"}
+  ],
+  "$defs": {
+    "turnContext": {
+      "type": "object",
+      "required": ["session_id", "turn_index"],
+      "properties": {
+        "session_id": {"type": "string", "minLength": 1},
+        "turn_index": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "evidenceItem": {
+      "type": "object",
+      "required": ["field", "source_type", "source_ref"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "source_type": {"type": "string", "minLength": 1},
+        "source_ref": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "knowledgeItem": {
+      "type": "object",
+      "required": ["knowledge_id", "type", "source_ref", "evidence_strength"],
+      "properties": {
+        "knowledge_id": {"type": "string", "minLength": 1},
+        "type": {"type": "string", "minLength": 1},
+        "source_ref": {"type": "string", "minLength": 1},
+        "evidence_strength": {"type": "string", "minLength": 1},
+        "usage": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "errorObject": {
+      "type": "object",
+      "required": ["code", "message", "missing_fields"],
+      "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1},
+        "missing_fields": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "baseRequest": {
+      "type": "object",
+      "required": ["contract_version", "module", "profile_id", "version_id", "turn_context", "payload"],
+      "properties": {
+        "contract_version": {"const": "stage-a.v1"},
+        "module": {"enum": ["deep_dive", "creation_map", "optimization_demo", "creation"]},
+        "profile_id": {"type": "string", "minLength": 1},
+        "version_id": {"type": "string", "minLength": 1},
+        "turn_context": {"$ref": "#/$defs/turnContext"},
+        "payload": {"type": "object"}
+      }
+    },
+    "baseResponse": {
+      "type": "object",
+      "required": ["contract_version", "module", "status", "profile_id", "version_id", "evidence", "unknowns", "uncertainties", "cited_knowledge", "user_confirmation_required", "error"],
+      "properties": {
+        "contract_version": {"const": "stage-a.v1"},
+        "module": {"enum": ["deep_dive", "creation_map", "optimization_demo", "creation"]},
+        "status": {"type": "string"},
+            "profile_id": {"type": "string", "minLength": 1},
+        "version_id": {"type": "string", "minLength": 1},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidenceItem"}},
+        "unknowns": {"type": "array", "items": {"type": "string"}},
+        "uncertainties": {"type": "array", "items": {"type": "string"}},
+        "cited_knowledge": {"type": "array", "items": {"$ref": "#/$defs/knowledgeItem"}},
+        "user_confirmation_required": {"type": "boolean"},
+        "error": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/errorObject"}]}
+      }
+    },
+    "historyItem": {
+      "type": "object",
+      "required": ["work_ref"],
+      "properties": {
+        "work_ref": {"type": "string", "minLength": 1},
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "cover_click_rate": {"type": ["number", "null"]},
+            "like_collect_rate": {"type": ["number", "null"]},
+            "impressions": {"type": ["integer", "null"], "minimum": 0},
+            "likes": {"type": ["integer", "null"], "minimum": 0}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "materialSource": {
+      "type": "object",
+      "required": ["source_ref", "source_type"],
+      "properties": {
+        "source_ref": {"type": "string", "minLength": 1},
+        "source_type": {"type": "string", "minLength": 1},
+        "allowed_facts": {"type": "array", "items": {"type": "string"}},
+        "unknowns": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "productKnowledgeInput": {
+      "type": "object",
+      "required": ["knowledge_id", "content"],
+      "properties": {
+        "knowledge_id": {"type": "string", "minLength": 1},
+        "content": {"type": "string", "minLength": 1},
+        "type": {"type": "string"},
+        "source_ref": {"type": "string"},
+        "evidence_strength": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "conflictInput": {
+      "type": "object",
+      "required": ["field", "values"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "values": {"type": "array", "minItems": 2},
+        "reason": {"type": "string"},
+        "evidence": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "deepDivePayload": {
+      "type": "object",
+      "required": ["session_state", "user_message", "history", "known_information", "question_counts", "account_homepage", "selected_work"],
+      "properties": {
+        "session_state": {"enum": ["first_archive", "active"]},
+        "entry_mode": {"enum": ["optimization", "creation"]},
+        "user_message": {"type": ["string", "null"]},
+        "theme": {"type": ["string", "null"]},
+        "account_homepage_history": {"type": ["object", "null"]},
+        "history": {"type": "array", "items": {"$ref": "#/$defs/historyItem"}},
+        "material_sources": {"type": "array", "items": {"$ref": "#/$defs/materialSource"}},
+        "revision_type": {"enum": ["presentation", "structure", "factual"]},
+        "known_information": {"type": "object"},
+        "confirmed_map": {"type": ["object", "null"]},
+        "user_request": {"type": ["string", "null"]},
+        "question_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0, "maximum": 3}
+        },
+        "account_homepage": {"type": "object"},
+        "selected_work": {"type": ["object", "null"]},
+        "product_knowledge": {"type": "array", "items": {"$ref": "#/$defs/productKnowledgeInput"}},
+        "confirmed_cases": {"type": "array", "items": {"type": "object"}}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"entry_mode": {"const": "creation"}}, "required": ["entry_mode"]},
+          "then": {"required": ["theme"], "properties": {"theme": {"type": "string", "minLength": 1}, "selected_work": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"entry_mode": {"const": "optimization"}}, "required": ["entry_mode"]},
+          "then": {"properties": {"selected_work": {"type": "object"}}}
+        },
+        {
+          "if": {"properties": {"entry_mode": {"const": "creation"}}, "required": ["entry_mode"]},
+          "then": {"required": ["account_homepage_history"]}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "mapDraft": {
+      "type": "object",
+      "required": ["account_creation_map", "work_creation_context", "conflicts"],
+      "properties": {
+        "target_audience": {"type": ["array", "null"], "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "content_direction": {"type": ["string", "null"]},
+        "user_problem_scene": {"type": ["string", "null"]},
+        "account_content_scene": {"type": ["string", "null"]},
+        "account_creation_map": {
+          "type": ["object", "null"],
+          "properties": {
+            "target_audience": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "service_scenarios": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "content_direction_plan": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+          },
+          "required": ["target_audience", "service_scenarios", "content_direction_plan"],
+          "additionalProperties": false
+        },
+        "work_creation_context": {
+          "type": ["object", "null"],
+          "properties": {
+            "work_id": {"type": "string", "minLength": 1},
+            "work_goal": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "reader_takeaway": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "must_retain_points": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "detail_expansion_points": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "writing_style": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "content_type": {"enum": ["method", "artifact", "hybrid"]},
+            "body_length_target": {"type": "integer", "minimum": 1, "maximum": 800},
+            "content_archetype": {"enum": ["life_record", "experience_recap", "method", "review", "knowledge_explanation", "narrative", "artifact", "hybrid"]},
+            "content_type_confidence": {"enum": ["low", "medium", "high"]},
+            "content_type_basis": {"type": "array", "items": {"type": "string"}},
+            "content_structure": {"type": "array", "items": {"type": "string"}},
+            "technical_depth": {"enum": ["not_applicable", "general", "product", "technical", "unknown"]},
+            "terminology_policy": {"enum": ["not_applicable", "explain_first_use", "bilingual_fields", "unknown"]},
+            "format_constraints": {"type": "array", "items": {"type": "string"}},
+            "material_sources": {"type": "array", "items": {"$ref": "#/$defs/materialSource"}},
+            "field_status": {"type": "object", "additionalProperties": {"enum": ["required", "optional", "not_applicable", "unknown"]}}
+          },
+          "required": ["work_id", "work_goal", "reader_takeaway", "must_retain_points", "detail_expansion_points", "writing_style"],
+          "additionalProperties": false
+        },
+        "conflicts": {"type": "array", "items": {"$ref": "#/$defs/conflictInput"}}
+      },
+      "additionalProperties": false
+    },
+    "deepDiveRequest": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRequest"},
+        {
+          "type": "object",
+          "properties": {
+            "module": {"const": "deep_dive"},
+            "payload": {"$ref": "#/$defs/deepDivePayload"}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "deepDiveResponse": {
+      "allOf": [
+        {"$ref": "#/$defs/baseResponse"},
+        {
+          "type": "object",
+          "required": ["question_goal", "question", "known_information", "question_counts", "conflicts", "stop_reason", "creation_map_draft", "track", "initial_account_analysis", "initial_work_analysis", "account_track_status", "work_track_status", "account_question_count", "work_question_count"],
+          "properties": {
+            "module": {"const": "deep_dive"},
+            "status": {"enum": ["needs_user_input", "draft_ready", "information_insufficient", "error"]},
+            "question_goal": {"type": ["string", "null"]},
+            "question": {"type": ["string", "null"]},
+            "track": {"enum": ["account", "work", "blocked"]},
+            "initial_account_analysis": {"type": "object"},
+            "initial_work_analysis": {"type": "object"},
+            "account_track_status": {"enum": ["not_started", "active", "completed", "information_insufficient", "blocked"]},
+            "work_track_status": {"enum": ["not_started", "active", "completed", "information_insufficient", "blocked"]},
+            "account_question_count": {"type": "integer", "minimum": 0, "maximum": 3},
+            "work_question_count": {"type": "integer", "minimum": 0, "maximum": 3},
+            "account_creative_thinking": {"type": ["object", "null"]},
+            "work_creative_thinking": {"type": ["object", "null"]},
+            "account_snapshot": {"type": ["object", "null"]},
+            "known_information": {"type": "object"},
+            "question_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0, "maximum": 3}},
+            "conflicts": {"type": "array", "items": {"$ref": "#/$defs/conflictInput"}},
+            "stop_reason": {"enum": ["ask_next_question", "information_sufficient", "question_limit_reached", "conflict_requires_confirmation", "input_invalid"]},
+            "creation_map_draft": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/mapDraft"}]}
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"status": {"const": "needs_user_input"}}, "required": ["status"]},
+              "then": {"properties": {"question": {"type": "string", "minLength": 1}, "creation_map_draft": {"type": "null"}, "stop_reason": {"enum": ["ask_next_question", "conflict_requires_confirmation"]}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "draft_ready"}}, "required": ["status"]},
+              "then": {"properties": {"question": {"type": "null"}, "creation_map_draft": {"$ref": "#/$defs/mapDraft"}, "stop_reason": {"const": "information_sufficient"}, "user_confirmation_required": {"const": true}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "information_insufficient"}}, "required": ["status"]},
+              "then": {"properties": {"question": {"type": "null"}, "creation_map_draft": {"type": "null"}, "stop_reason": {"const": "question_limit_reached"}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "error"}}, "required": ["status"]},
+              "then": {"properties": {"stop_reason": {"const": "input_invalid"}, "error": {"$ref": "#/$defs/errorObject"}}}
+            }
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "creationMapPayload": {
+      "type": "object",
+      "required": ["deep_dive", "current_confirmed_map"],
+      "properties": {
+            "deep_dive": {
+          "type": "object",
+          "required": ["known", "unknowns", "conflicts", "evidence", "account_creative_thinking", "work_creative_thinking"],
+          "properties": {
+            "known": {"type": "object"},
+            "unknowns": {"type": "array", "items": {"type": "string"}},
+            "conflicts": {"type": "array", "items": {"$ref": "#/$defs/conflictInput"}},
+            "evidence": {"type": "array", "items": {"type": "string"}}
+            ,"account_creative_thinking": {"type": "object"}
+            ,"work_creative_thinking": {"type": "object"}
+          },
+          "additionalProperties": false
+        },
+        "current_confirmed_map": {"type": ["object", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "creationMapRequest": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRequest"},
+        {"type": "object", "properties": {"module": {"const": "creation_map"}, "payload": {"$ref": "#/$defs/creationMapPayload"}}}
+      ],
+      "unevaluatedProperties": false
+    },
+    "creationMapResponse": {
+      "allOf": [
+        {"$ref": "#/$defs/baseResponse"},
+        {
+          "type": "object",
+          "required": ["creation_map_draft"],
+          "properties": {
+            "module": {"const": "creation_map"},
+            "status": {"enum": ["draft", "needs_deep_dive", "error"]},
+            "creation_map_draft": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/mapDraft"}]}
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"status": {"const": "draft"}}, "required": ["status"]},
+              "then": {"properties": {"creation_map_draft": {"$ref": "#/$defs/mapDraft"}, "user_confirmation_required": {"const": true}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "error"}}, "required": ["status"]},
+              "then": {"properties": {"error": {"$ref": "#/$defs/errorObject"}}}
+            }
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "imageInput": {
+      "type": "object",
+      "required": ["image_ref", "description"],
+      "properties": {
+        "image_ref": {"type": "string", "minLength": 1},
+        "description": {"type": ["string", "null"]},
+        "image_index": {"type": "integer", "minimum": 1},
+        "ocr_text": {"type": "string"},
+        "visual_description": {"type": "string"},
+        "layout_description": {"type": "string"},
+        "image_role": {"type": "string"},
+        "unknowns": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "workContent": {
+      "type": "object",
+      "required": ["work_id", "title", "body", "images"],
+      "properties": {
+        "work_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string"},
+        "body": {"type": "string"},
+        "images": {"type": "array", "items": {"$ref": "#/$defs/imageInput"}},
+        "raw_parsed_content": {"type": ["object", "null"]},
+        "user_confirmed_content": {"type": ["object", "null"]},
+        "confirmed_at": {"type": ["string", "null"]},
+        "parse_errors": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "expressionDirection": {
+      "type": "object",
+      "required": ["direction_id", "name", "summary"],
+      "properties": {
+        "direction_id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "professionalizationLevel": {
+      "type": "object",
+      "required": ["level_id", "name", "summary"],
+      "properties": {
+        "level_id": {"enum": ["general_explanation", "product_professional", "technical_product"]},
+        "name": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "differentiationCandidate": {
+      "type": "object",
+      "required": ["direction_id", "name", "summary", "difference_from_original", "fit_for_goal", "content_impact", "example", "expression_direction", "professionalization_level", "target_reader_level", "technical_terms", "upgrade_examples", "readability_risk", "validation_metrics"],
+      "properties": {
+        "direction_id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "difference_from_original": {"type": "string", "minLength": 1},
+        "fit_for_goal": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "content_impact": {"type": "string", "minLength": 1},
+        "example": {"type": "string", "minLength": 1},
+        "expression_direction": {"$ref": "#/$defs/expressionDirection"},
+        "professionalization_level": {"$ref": "#/$defs/professionalizationLevel"},
+        "target_reader_level": {"type": "string", "minLength": 1},
+        "technical_terms": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "upgrade_examples": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["general", "professional"], "properties": {"general": {"type": "string", "minLength": 1}, "professional": {"type": "string", "minLength": 1}}, "additionalProperties": false}},
+        "readability_risk": {"type": "string", "minLength": 1},
+        "validation_metrics": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "differentiationDirection": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["differentiation_pending", "differentiation_confirmed"]},
+        "candidates": {"type": "array", "minItems": 2, "maxItems": 3, "items": {"$ref": "#/$defs/differentiationCandidate"}},
+        "selected_direction_id": {"type": ["string", "null"]},
+        "user_modified": {"type": "boolean"},
+        "confirmed_direction": {"oneOf": [{"$ref": "#/$defs/differentiationCandidate"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "differentiation_pending"}}, "required": ["status"]},
+          "then": {"required": ["candidates"], "properties": {"selected_direction_id": {"type": "null"}, "confirmed_direction": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"status": {"const": "differentiation_confirmed"}}, "required": ["status"]},
+          "then": {"required": ["candidates", "selected_direction_id", "user_modified", "confirmed_direction"], "properties": {"selected_direction_id": {"type": "string", "minLength": 1}, "confirmed_direction": {"$ref": "#/$defs/differentiationCandidate"}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "optimizationDemoPayload": {
+      "type": "object",
+      "required": ["source_work", "confirmed_map", "confirmed_cases", "product_knowledge", "user_request", "reference_content", "knowledge_usage_mode"],
+      "properties": {
+        "source_work": {
+          "type": "object",
+          "required": ["work_id", "title", "body", "images"],
+          "properties": {
+            "work_id": {"type": "string", "minLength": 1},
+            "title": {"type": "string"},
+            "body": {"type": "string"},
+            "images": {"type": "array", "items": {"$ref": "#/$defs/imageInput"}}
+          },
+          "additionalProperties": false
+        },
+        "confirmed_map": {
+          "type": "object",
+          "required": ["map_id", "target_audience", "account_content_scene"],
+          "properties": {
+            "map_id": {"type": "string", "minLength": 1},
+            "target_audience": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "account_content_scene": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        "confirmed_cases": {"type": "array", "items": {"type": "object"}},
+        "product_knowledge": {"type": "array", "items": {"$ref": "#/$defs/productKnowledgeInput"}},
+        "knowledge_usage_mode": {"enum": ["knowledge_enhanced", "deep_dive_only"]},
+        "target_metrics": {"type": "array", "items": {"enum": ["cover_click_rate", "like_rate", "collect_rate"]}},
+        "original_metrics": {"type": "object"},
+        "optimization_hypotheses": {"type": "array", "items": {"type": "object"}},
+        "knowledge_context": {"type": "array", "items": {"$ref": "#/$defs/knowledgeItem"}},
+        "user_request": {"type": ["string", "null"]},
+        "reference_content": {"type": ["object", "null"]},
+        "differentiation_direction": {"$ref": "#/$defs/differentiationDirection"},
+        "professionalization_preferences": {"type": "array", "items": {"enum": ["general_explanation", "product_professional", "technical_product"]}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    },
+    "diffItem": {
+      "type": "object",
+      "required": ["field", "original", "revised", "reason"],
+      "properties": {
+        "field": {"type": "string"},
+        "original": {},
+        "revised": {},
+        "reason": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "imagePlan": {
+      "type": "object",
+      "required": ["image_ref", "visual", "composition", "text", "information_task"],
+      "properties": {
+        "image_ref": {"type": "string"},
+        "visual": {"type": "string"},
+        "composition": {"type": "string"},
+        "text": {"type": "string"},
+        "information_task": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "changeItem": {
+      "type": "object",
+      "required": ["change_id", "area", "change", "evidence_refs", "expected_metric_refs", "risk", "hypothesis"],
+      "properties": {
+        "change_id": {"type": "string"},
+        "area": {"type": "string"},
+        "change": {"type": "string"},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        "expected_metric_refs": {"type": "array", "items": {"type": "string"}},
+        "risk": {"type": "string"},
+        "hypothesis": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "optimizationDemoRequest": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRequest"},
+        {"type": "object", "properties": {"module": {"const": "optimization_demo"}, "payload": {"$ref": "#/$defs/optimizationDemoPayload"}}}
+      ],
+      "unevaluatedProperties": false
+    },
+    "demoCopy": {
+      "type": "object",
+      "required": ["title", "body"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "body": {
+          "oneOf": [
+            {"type": "string", "minLength": 120},
+            {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}}
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "optimizationDemoResponse": {
+      "allOf": [
+        {"$ref": "#/$defs/baseResponse"},
+        {
+          "type": "object",
+          "properties": {
+            "module": {"const": "optimization_demo"},
+            "status": {"enum": ["differentiation_pending", "differentiation_confirmed", "demo_ready", "error"]},
+            "differentiation_direction": {"$ref": "#/$defs/differentiationDirection"},
+            "optimization_goal": {"type": "array", "items": {"enum": ["click", "understanding", "utility", "identification"]}, "minItems": 1, "uniqueItems": true},
+            "diagnosis": {"type": "array", "items": {"type": "object"}},
+            "original_copy": {"type": "object"},
+            "demo_copy": {"$ref": "#/$defs/demoCopy"},
+            "diffs": {"type": "array", "items": {"$ref": "#/$defs/diffItem"}},
+            "keyword_suggestions": {"type": "array"},
+            "topic_suggestions": {"type": "array"},
+            "cover_plan": {"type": "object"},
+            "image_plans": {"type": "array", "items": {"$ref": "#/$defs/imagePlan"}},
+            "change_items": {"type": "array", "items": {"$ref": "#/$defs/changeItem"}},
+            "expected_metrics": {"type": "array"},
+            "adoption_status": {"const": "pending"}
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"status": {"const": "differentiation_pending"}}, "required": ["status"]},
+              "then": {"required": ["differentiation_direction"], "properties": {"user_confirmation_required": {"const": true}, "error": {"type": "null"}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "differentiation_confirmed"}}, "required": ["status"]},
+              "then": {"required": ["differentiation_direction"], "properties": {"user_confirmation_required": {"const": false}, "error": {"type": "null"}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "demo_ready"}}, "required": ["status"]},
+              "then": {
+                "required": ["optimization_goal", "diagnosis", "original_copy", "demo_copy", "diffs", "keyword_suggestions", "topic_suggestions", "cover_plan", "image_plans", "change_items", "expected_metrics", "adoption_status"],
+                "properties": {"adoption_status": {"const": "pending"}, "user_confirmation_required": {"const": true}, "error": {"type": "null"}}
+              }
+            },
+            {
+              "if": {"properties": {"status": {"const": "error"}}, "required": ["status"]},
+              "then": {"properties": {"error": {"$ref": "#/$defs/errorObject"}}}
+            }
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "creationPayload": {
+      "type": "object",
+      "required": ["creation_id", "theme", "confirmed_map", "confirmed_creation_context", "retrieval_snapshot"],
+      "properties": {
+        "creation_id": {"type": "string", "minLength": 1},
+        "theme": {"type": "string", "minLength": 1},
+        "content_type": {"enum": ["method", "artifact", "hybrid"]},
+        "body_length_target": {"type": "integer", "minimum": 1, "maximum": 800},
+        "confirmed_map": {"type": "object"},
+        "confirmed_creation_context": {"type": "object"},
+        "content_archetype": {"enum": ["life_record", "experience_recap", "method", "review", "knowledge_explanation", "narrative", "artifact", "hybrid"]},
+        "content_type_confidence": {"enum": ["low", "medium", "high"]},
+        "content_type_basis": {"type": "array", "items": {"type": "string"}},
+        "content_structure": {"type": "array", "items": {"type": "string"}},
+        "technical_depth": {"enum": ["not_applicable", "general", "product", "technical", "unknown"]},
+        "terminology_policy": {"enum": ["not_applicable", "explain_first_use", "bilingual_fields", "unknown"]},
+        "format_constraints": {"type": "array", "items": {"type": "string"}},
+        "material_sources": {"type": "array", "items": {"$ref": "#/$defs/materialSource"}},
+        "revision_type": {"enum": ["presentation", "structure", "factual"]},
+        "user_text_materials": {"type": "array"},
+        "image_material_descriptions": {"type": "array"},
+        "retrieval_snapshot": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "creationRequest": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRequest"},
+        {"type": "object", "properties": {"module": {"const": "creation"}, "payload": {"$ref": "#/$defs/creationPayload"}}}
+      ],
+      "unevaluatedProperties": false
+    },
+    "creationResponse": {
+      "allOf": [
+        {"$ref": "#/$defs/baseResponse"},
+        {
+          "type": "object",
+          "properties": {
+            "module": {"const": "creation"},
+            "status": {"enum": ["creation_ready", "error"]},
+            "creation_id": {"type": "string", "minLength": 1},
+            "retrieval_snapshot_id": {"type": "string", "minLength": 1},
+            "content_type": {"enum": ["method", "artifact", "hybrid"]},
+            "content_archetype": {"enum": ["life_record", "experience_recap", "method", "review", "knowledge_explanation", "narrative", "artifact", "hybrid"]},
+            "content_type_confidence": {"enum": ["low", "medium", "high"]},
+            "content_type_basis": {"type": "array", "items": {"type": "string"}},
+            "content_structure": {"type": "array", "items": {"type": "string"}},
+            "technical_depth": {"enum": ["not_applicable", "general", "product", "technical", "unknown"]},
+            "terminology_policy": {"enum": ["not_applicable", "explain_first_use", "bilingual_fields", "unknown"]},
+            "format_constraints": {"type": "array", "items": {"type": "string"}},
+            "material_sources": {"type": "array", "items": {"$ref": "#/$defs/materialSource"}},
+            "revision_type": {"enum": ["presentation", "structure", "factual"]},
+            "output_order": {"const": ["cover_plan", "image_plans", "title", "body"]},
+            "creation_copy": {"type": "object"},
+            "cover_plan": {"type": "object"},
+            "image_plans": {"type": "array", "items": {"$ref": "#/$defs/imagePlan"}},
+            "source_citations": {"type": "array", "items": {"type": "object"}},
+            "editable_fields": {"type": "array", "items": {"type": "string"}},
+            "provenance": {"type": "array", "items": {"type": "object"}}
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"status": {"const": "creation_ready"}}, "required": ["status"]},
+              "then": {"required": ["creation_id", "retrieval_snapshot_id", "content_type", "output_order", "creation_copy", "cover_plan", "image_plans", "source_citations", "editable_fields", "provenance"], "properties": {"user_confirmation_required": {"const": false}, "error": {"type": "null"}}}
+            },
+            {
+              "if": {"properties": {"status": {"const": "error"}}, "required": ["status"]},
+              "then": {"properties": {"error": {"$ref": "#/$defs/errorObject"}}}
+            }
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

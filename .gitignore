@@ -1,0 +1,11 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+*.log
+results/
+runtime-inputs/
+private-cases/
+

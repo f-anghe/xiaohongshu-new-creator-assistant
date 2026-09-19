@@ -1,0 +1,458 @@
+{
+  "registry_version": "2.0",
+  "source_file": "knowledge-base/product_initial_knowledge.md",
+  "hierarchy": {
+    "optimization_goals": [
+      "高点击率",
+      "高点赞率",
+      "高收藏率"
+    ],
+    "analysis_dimensions": [
+      "用户心理",
+      "封面设计",
+      "标题设计",
+      "内容方法",
+      "图文结构",
+      "搜索与长尾"
+    ],
+    "knowledge_unit_fields": [
+      "适用问题",
+      "具体动作",
+      "作用机制",
+      "适用内容",
+      "证据等级",
+      "限制与验证方法"
+    ]
+  },
+  "knowledge_items": [
+    {
+      "knowledge_id": "cover",
+      "analysis_dimension": "封面设计",
+      "content": "封面需让目标用户快速理解内容及相关性；建议说明画面主体、构图与信息层级、封面文字、色彩光线或风格、每张图的信息任务及应避免的问题。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§5 封面设计；§5.4 图片优化建议格式",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "cover_click_rate",
+        "collect_rate"
+      ],
+      "problem_types": [
+        "impression_high_click_low",
+        "topic_relevance_unclear",
+        "collect_value_insufficient"
+      ],
+      "content_positions": [
+        "cover",
+        "image"
+      ],
+      "actions": [
+        "明确画面主体",
+        "建立信息层级",
+        "为每张图设置信息任务"
+      ],
+      "mechanism": "清晰的视觉主体和信息层级可以降低理解成本，并帮助用户判断是否值得点击或保存。",
+      "limitations": [
+        "不能使用与正文无关的画面骗取点击"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "cover_click_rate"
+      ],
+      "secondary_metrics": [
+        "collect_rate"
+      ]
+    },
+    {
+      "knowledge_id": "cover_visual_salience",
+      "analysis_dimension": "封面设计",
+      "content": "封面和标题应降低理解成本并明确人群、场景、问题、结果或差异；封面保持明确视觉主体、信息层级和可读文字。视觉显著性只能解释点击动机，不能保证流量。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§3.1 浏览与点击；§5.2 图文内容型封面",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "cover_click_rate"
+      ],
+      "problem_types": [
+        "impression_high_click_low",
+        "understanding_cost_high"
+      ],
+      "content_positions": [
+        "cover",
+        "title"
+      ],
+      "actions": [
+        "突出人群、场景、问题或结果",
+        "减少无关信息",
+        "提高文字可读性"
+      ],
+      "mechanism": "用户更容易完成看懂主题、判断相关和决定点击。",
+      "limitations": [
+        "视觉显著性只能解释点击动机，不能保证流量"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "cover_click_rate"
+      ],
+      "secondary_metrics": []
+    },
+    {
+      "knowledge_id": "title",
+      "analysis_dimension": "标题设计",
+      "content": "标题可围绕搜索词与人群、场景、问题或结果组织，也可围绕经历、情绪、观点和身份认同组织；承诺必须由正文或图片兑现，不得绝对化、虚假、堆砌关键词或近似仿写爆款标题。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§6 标题设计",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "cover_click_rate",
+        "like_rate"
+      ],
+      "problem_types": [
+        "impression_high_click_low",
+        "click_high_like_low",
+        "promise_unfulfilled"
+      ],
+      "content_positions": [
+        "title",
+        "opening",
+        "body"
+      ],
+      "actions": [
+        "明确人群、问题和结果",
+        "让正文兑现标题承诺",
+        "避免绝对化表达"
+      ],
+      "mechanism": "标题降低点击判断成本，承诺兑现有助于形成内容信任和认同。",
+      "limitations": [
+        "不得虚假、堆砌关键词或近似仿写爆款标题"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "cover_click_rate"
+      ],
+      "secondary_metrics": [
+        "like_rate"
+      ]
+    },
+    {
+      "knowledge_id": "utility_structure",
+      "analysis_dimension": "内容方法",
+      "content": "实用价值型内容可按问题或关键词、目标人群、判断标准、步骤或对比、结果、适用范围与限制组织，并提供可执行信息、原因及不适用情况。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§7.1 实用价值型内容",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "collect_rate",
+        "like_rate"
+      ],
+      "problem_types": [
+        "click_high_collect_low",
+        "collect_value_insufficient",
+        "content_not_actionable"
+      ],
+      "content_positions": [
+        "body",
+        "image",
+        "ending"
+      ],
+      "content_types": [
+        "tutorial",
+        "checklist",
+        "framework",
+        "comparison"
+      ],
+      "actions": [
+        "增加判断标准",
+        "拆分执行步骤",
+        "补充适用范围与限制"
+      ],
+      "mechanism": "具体、可执行且可复习的结构更容易形成长期使用价值。",
+      "limitations": [
+        "不能为了收藏堆砌无关信息"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "collect_rate"
+      ],
+      "secondary_metrics": [
+        "like_rate"
+      ]
+    },
+    {
+      "knowledge_id": "collectability",
+      "analysis_dimension": "内容方法",
+      "content": "收藏导向内容应提供用户未来可以重新查找和使用的信息，例如清单、步骤、模板、判断标准、对比表或可复用框架；内容需要结构清楚、信息具体，并说明适用范围和限制。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§7.1 实用价值型内容；§8.1 信息型图文",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "collect_rate"
+      ],
+      "problem_types": [
+        "click_high_collect_low",
+        "collect_value_insufficient"
+      ],
+      "content_positions": [
+        "body",
+        "image",
+        "ending"
+      ],
+      "content_types": [
+        "checklist",
+        "template",
+        "framework",
+        "tutorial"
+      ],
+      "actions": [
+        "增加可保存清单",
+        "提供可复用模板",
+        "补充判断标准",
+        "压缩无关信息"
+      ],
+      "mechanism": "可复查、可执行和可迁移的信息更容易形成收藏动机。",
+      "limitations": [
+        "收藏价值需要通过发布后数据验证，不能直接承诺收藏率提升"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "collect_rate"
+      ],
+      "secondary_metrics": []
+    },
+    {
+      "knowledge_id": "identification",
+      "analysis_dimension": "用户心理",
+      "content": "情绪与认同可来自真实经历、身份共鸣、具体体验和个人观点；内容应通过具体事件、动作、对话或细节增强真实感，并区分点击目标与认同目标。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§3.2 点赞与表达；§7.2 情绪与认同型内容",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "like_rate"
+      ],
+      "problem_types": [
+        "click_high_like_low",
+        "identity_connection_weak"
+      ],
+      "content_positions": [
+        "body",
+        "ending"
+      ],
+      "content_types": [
+        "narrative",
+        "opinion",
+        "experience"
+      ],
+      "actions": [
+        "补充具体经历和细节",
+        "明确个人观点",
+        "增加身份代入"
+      ],
+      "mechanism": "具体体验和观点有助于用户形成认同和表达冲动。",
+      "limitations": [
+        "不能把通用心理机制写成确定性效果"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "like_rate"
+      ],
+      "secondary_metrics": []
+    },
+    {
+      "knowledge_id": "narrative_structure",
+      "analysis_dimension": "图文结构",
+      "content": "叙事型内容可按人物或场景、冲突或反差、生活细节、情绪变化、个人观点和自然回响组织；图片和文字共同推动故事，并保持色调、人物和视觉风格统一。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§7.2 情绪与认同型内容；§8.2 叙事型图文",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "like_rate"
+      ],
+      "problem_types": [
+        "click_high_like_low",
+        "emotional_connection_weak"
+      ],
+      "content_positions": [
+        "body",
+        "image",
+        "ending"
+      ],
+      "content_types": [
+        "narrative",
+        "experience"
+      ],
+      "actions": [
+        "补充冲突或反差",
+        "安排情绪变化",
+        "保持图文风格统一"
+      ],
+      "mechanism": "连续的场景、细节和观点有助于形成情绪投入。",
+      "limitations": [
+        "不得虚构用户未提供的个人经历"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "like_rate"
+      ],
+      "secondary_metrics": []
+    },
+    {
+      "knowledge_id": "image_structure",
+      "analysis_dimension": "图文结构",
+      "content": "逐图建议应说明画面主体、构图与层级、文字、风格和每张图的信息任务；信息型图文每页承担一个主要信息点，叙事型图文由图片与文字共同推进表达。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§5.4 图片优化建议格式；§8 图文结构",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "like_rate",
+        "collect_rate"
+      ],
+      "problem_types": [
+        "understanding_cost_high",
+        "content_not_actionable",
+        "visual_expression_inconsistent"
+      ],
+      "content_positions": [
+        "cover",
+        "image"
+      ],
+      "actions": [
+        "每页只保留一个主要信息点",
+        "说明每张图的信息任务",
+        "统一图文风格"
+      ],
+      "mechanism": "清晰的信息层级和图文配合可以降低理解成本并提高复习便利性。",
+      "limitations": [
+        "不能用视觉强刺激替代内容价值"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "collect_rate"
+      ],
+      "secondary_metrics": [
+        "like_rate"
+      ]
+    },
+    {
+      "knowledge_id": "comparison",
+      "analysis_dimension": "内容方法",
+      "content": "对比可用于封面、教程、测评和信息型图文，帮助展示对象差异、判断标准、步骤或结果；使用对比和清晰层级降低理解成本，并说明适用范围与限制。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§5.2 图文内容型封面；§7.1 实用价值型内容；§8.1 信息型图文",
+      "evidence_strength": "方法",
+      "target_metrics": [
+        "collect_rate"
+      ],
+      "problem_types": [
+        "impression_high_click_low",
+        "collect_value_insufficient",
+        "decision_cost_high"
+      ],
+      "content_positions": [
+        "cover",
+        "body",
+        "image"
+      ],
+      "content_types": [
+        "comparison",
+        "tutorial",
+        "framework"
+      ],
+      "actions": [
+        "明确对比维度",
+        "提供判断标准",
+        "说明适用范围和限制"
+      ],
+      "mechanism": "对比可以帮助用户快速理解差异并降低后续判断成本。",
+      "limitations": [
+        "对比维度必须真实且与用户问题相关"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "collect_rate"
+      ],
+      "secondary_metrics": []
+    },
+    {
+      "knowledge_id": "anti_homogenization",
+      "analysis_dimension": "内容方法",
+      "content": "可以学习优秀内容的机制，但不得复制标题原句、正文句式、独特故事、具体案例、图片构图、文字排版、视觉识别组合或可识别内容顺序；应基于当前账号的人群、场景、问题、方法和个人证据重组。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§7.4 反同质化创作",
+      "evidence_strength": "原则",
+      "target_metrics": [
+        "like_rate",
+        "collect_rate"
+      ],
+      "problem_types": [
+        "homogenization_risk"
+      ],
+      "content_positions": [
+        "cover",
+        "title",
+        "body",
+        "image"
+      ],
+      "actions": [
+        "保留机制但重组人群、场景、问题和证据"
+      ],
+      "mechanism": "独立表达有助于形成账号差异化和可信度。",
+      "limitations": [
+        "不得复制可识别的独特表达或内容顺序"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "like_rate"
+      ],
+      "secondary_metrics": [
+        "collect_rate"
+      ]
+    },
+    {
+      "knowledge_id": "evidence_boundary",
+      "analysis_dimension": "用户心理",
+      "content": "区分已有依据、合理推测和待验证假设；通用知识、单次观察或单一技巧不能保证效果或证明因果，不承诺曝光、点赞或涨粉。高风险主题需降低确定性并建议核验专业来源。",
+      "type": "product_initial_knowledge",
+      "source_ref": "§2.2 证据等级；§10.3 待验证指标与不确定性；§11 平台边界与安全边界",
+      "evidence_strength": "原则",
+      "target_metrics": [
+        "cover_click_rate",
+        "like_rate",
+        "collect_rate"
+      ],
+      "problem_types": [
+        "data_insufficient",
+        "causal_claim_risk"
+      ],
+      "content_positions": [
+        "body",
+        "ending"
+      ],
+      "actions": [
+        "标记证据等级",
+        "记录待验证假设",
+        "说明限制和未知"
+      ],
+      "mechanism": "清楚区分证据和假设可以减少错误归因。",
+      "limitations": [
+        "不得承诺曝光、点赞、收藏或涨粉结果"
+      ],
+      "status": "published",
+      "version": "2.0",
+      "primary_metrics": [
+        "cover_click_rate",
+        "like_rate",
+        "collect_rate"
+      ],
+      "secondary_metrics": []
+    }
+  ]
+}

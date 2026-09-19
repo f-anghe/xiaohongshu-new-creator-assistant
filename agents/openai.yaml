@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书新手运营 AI 助手"
+  short_description: "为小红书图文账号提供创作深挖、原创创作、地图生成与优化Demo"
+  default_prompt: "使用 $xiaohongshu-new-creator-assistant 根据当前账号资料执行创作、创作深挖、地图生成或优化Demo任务；创作深挖采用自适应蓝图和具体问题引导；优化Demo先识别并确认作品截图中的标题、正文和逐图内容，再保持原作品、指标和差异化确认门禁。"
