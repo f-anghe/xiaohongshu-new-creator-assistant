@@ -30,7 +30,12 @@
 
 - `SKILL.md`：Skill 主入口和路由规则
 - `agents/openai.yaml`：界面展示信息和默认提示
-- `references/`：创作、深挖、地图、优化和结构化契约文件
+- `references/`：创作、深挖、地图、优化、知识库和结构化契约文件
+
+公开知识库文件：
+
+- `references/creative_deep_dive_rules.md`：模型自主深挖创作思路规则
+- `references/product_initial_knowledge.md`：产品初始知识库
 
 ## 隐私说明
 
@@ -43,4 +48,3 @@
 ## 许可证
 
 许可证正在由项目维护者确认。未正式添加许可证前，不应将本仓库内容视为授予了复制、修改或商业使用权。
-
